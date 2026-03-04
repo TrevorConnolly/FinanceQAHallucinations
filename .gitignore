@@ -1,0 +1,15 @@
+# Ignore the virtual environment
+venv/
+.venv/
+env/
+
+# Ignore Python cache files (junk)
+__pycache__/
+*.pyc
+
+# Ignore Environment Variables (API Keys)
+.env
+.env.local
+
+# Ignore Mac System files
+.DS_Store
