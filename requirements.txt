@@ -1,0 +1,7 @@
+llama-parse
+llama-index-core
+langchain
+langchain-text-splitters
+python-dotenv
+pandas
+tiktoken
