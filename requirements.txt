@@ -7,3 +7,9 @@ pandas
 tiktoken
 openai
 tqdm
+chromadb
+rank_bm25
+sentence-transformers
+torch
+langchain-openai
+
