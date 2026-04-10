@@ -12,4 +12,5 @@ rank_bm25
 sentence-transformers
 torch
 langchain-openai
-
+ragas==0.4.3
+datasets

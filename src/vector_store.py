@@ -11,11 +11,25 @@ from sentence_transformers import CrossEncoder
 
 # --- CONFIGURATION ---
 load_dotenv()
-DATA_DIR = "data"
+
+# 1. Get the absolute path of the directory where THIS script is (src/)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 2. Go up one level to find the Project Root (FinanceQAHallucinations/)
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
+# 3. Define paths relative to the Project Root
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 PROCESSED_DIR = os.path.join(DATA_DIR, "processed")
 CORPUS_PATH = os.path.join(PROCESSED_DIR, "corpus.jsonl")
-CHROMA_PATH = "outputs/chroma_db"
-BM25_PATH = "outputs/bm25_model.pkl"
+
+# Output Paths (Where the DB lives)
+OUTPUTS_DIR = os.path.join(PROJECT_ROOT, "outputs")
+CHROMA_PATH = os.path.join(OUTPUTS_DIR, "chroma_db")
+BM25_PATH = os.path.join(OUTPUTS_DIR, "bm25_model.pkl")
+
+# Ensure the output directory exists
+os.makedirs(OUTPUTS_DIR, exist_ok=True)
 
 class FinancialRetriever:
     def __init__(self):
@@ -134,8 +148,12 @@ class FinancialRetriever:
         bm25_ids = [self.doc_ids[i] for i in top_n_indices]
 
         # C. Ensemble (Merge)
-        combined_ids = list(set(vector_ids + bm25_ids)) # Remove duplicates
-        
+        combined_ids = list(dict.fromkeys(vector_ids + bm25_ids))
+        # Drop IDs not in current corpus (e.g. Chroma persisted after corpus.jsonl was regenerated)
+        combined_ids = [cid for cid in combined_ids if cid in self.chunks_map]
+        if not combined_ids:
+            return []
+
         # D. Reranking (The Judge)
         # Prepare pairs for the Cross-Encoder: [[Query, Text1], [Query, Text2]...]
         pairs = []

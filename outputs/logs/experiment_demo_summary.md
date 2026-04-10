@@ -1,0 +1,22 @@
+# RAG experiment demo summary
+
+**Setup:** `--skip-etl --skip-gold --eval-limit 2` (same corpus & gold for all runs). Percentages are means over 2 questions.
+
+## Markdown table (copy below)
+
+| experiment | n | exp_top_k | strict_cite | prompt | recall | cite_halluc | gold_cited | strict_abstain_pct | ctx_halluc_rate | claim_macro | claim_micro | faithfulness | ans_rel | ans_corr |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| baseline | 2 | 5 | 0 | default | 100.0 | 0.0 | 100.0 | 0.0 | 50.0 | 25.0 | 14.3 | 75.0 | 90.1 | 63.6 |
+| k3 | 2 | 3 | 0 | default | 100.0 | 0.0 | 100.0 | 0.0 | 50.0 | 25.0 | 10.0 | 100.0 | 93.4 | 67.9 |
+| k8 | 2 | 8 | 0 | default | 100.0 | 0.0 | 100.0 | 0.0 | 50.0 | 50.0 | 28.6 | 75.0 | 93.4 | 65.5 |
+| baseline_cot | 2 | 5 | 0 | chain_of_thought | 100.0 | 0.0 | 100.0 | 0.0 | 0.0 | 0.0 | 0.0 | 96.4 | 92.9 | 69.5 |
+| baseline_strict_cite | 2 | 5 | 1 | default | 100.0 | 0.0 | 100.0 | 0.0 | 50.0 | 25.0 | 16.7 | 100.0 | 93.4 | 60.4 |
+
+## TSV (paste into Excel / Sheets)
+
+experiment	n	exp_top_k	strict_cite	prompt	recall	cite_halluc	gold_cited	strict_abstain_pct	ctx_halluc_rate	claim_macro	claim_micro	faithfulness	ans_rel	ans_corr
+baseline	2	5	0	default	100.0	0.0	100.0	0.0	50.0	25.0	14.3	75.0	90.1	63.6
+k3	2	3	0	default	100.0	0.0	100.0	0.0	50.0	25.0	10.0	100.0	93.4	67.9
+k8	2	8	0	default	100.0	0.0	100.0	0.0	50.0	50.0	28.6	75.0	93.4	65.5
+baseline_cot	2	5	0	chain_of_thought	100.0	0.0	100.0	0.0	0.0	0.0	0.0	96.4	92.9	69.5
+baseline_strict_cite	2	5	1	default	100.0	0.0	100.0	0.0	50.0	25.0	16.7	100.0	93.4	60.4

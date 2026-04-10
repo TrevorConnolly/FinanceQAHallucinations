@@ -108,53 +108,54 @@ def critique_question(question, answer, chunk_text):
         print(f"❌ Critique Error: {e}")
         return None
 
-def main():
-    # 1. Load Data
+def run_gold_generation(sample_size: int | None = None) -> None:
+    """Sample chunks from INPUT_CORPUS and write synthetic gold_dataset.csv."""
+    size = sample_size if sample_size is not None else SAMPLE_SIZE
     all_chunks = load_chunks(INPUT_CORPUS)
-    
-    # 2. Sample
-    if len(all_chunks) < SAMPLE_SIZE:
+
+    if len(all_chunks) < size:
         selected_chunks = all_chunks
     else:
-        selected_chunks = random.sample(all_chunks, SAMPLE_SIZE)
-        
-    print(f"🎲 Selected {len(selected_chunks)} chunks for generation...")
-    
-    gold_data = []
-    
-    # 3. Iterate (Generate -> Critique -> Save)
-    for chunk in tqdm(selected_chunks, desc="Generating QA Pairs"):
-        # A. Generate
-        qa_pair = generate_question(chunk)
-        if not qa_pair: continue
-        
-        # B. Critique
-        critique = critique_question(qa_pair['question'], qa_pair['answer'], chunk['text'])
-        
-        # C. Filter
-        if critique and critique['pass']:
-            gold_data.append({
-                "question": qa_pair['question'],
-                "ground_truth_answer": qa_pair['answer'],
-                "gold_chunk_id": chunk['chunk_id'], # CRITICAL FOR RECALL@K
-                "source_doc": chunk['source'],
-                "section": chunk['section'],
-                "groundedness_score": critique['groundedness_score']
-            })
-        else:
-            # Optional: Print rejected questions to see why they failed
-            # print(f"Rejected: {qa_pair['question']} (Score: {critique})")
-            pass
+        selected_chunks = random.sample(all_chunks, size)
 
-    # 4. Save to CSV
+    print(f"🎲 Selected {len(selected_chunks)} chunks for generation...")
+
+    gold_data = []
+
+    for chunk in tqdm(selected_chunks, desc="Generating QA Pairs"):
+        qa_pair = generate_question(chunk)
+        if not qa_pair:
+            continue
+
+        critique = critique_question(
+            qa_pair["question"], qa_pair["answer"], chunk["text"]
+        )
+
+        if critique and critique["pass"]:
+            gold_data.append(
+                {
+                    "question": qa_pair["question"],
+                    "ground_truth_answer": qa_pair["answer"],
+                    "gold_chunk_id": chunk["chunk_id"],
+                    "source_doc": chunk["source"],
+                    "section": chunk["section"],
+                    "groundedness_score": critique["groundedness_score"],
+                }
+            )
+
     df = pd.DataFrame(gold_data)
     os.makedirs(os.path.dirname(OUTPUT_CSV), exist_ok=True)
     df.to_csv(OUTPUT_CSV, index=False)
-    
+
     print(f"\n✅ Generation Complete!")
     print(f"Total Attempted: {len(selected_chunks)}")
     print(f"Total Passed Critique: {len(df)}")
     print(f"💾 Saved to: {OUTPUT_CSV}")
+
+
+def main():
+    run_gold_generation()
+
 
 if __name__ == "__main__":
     main()

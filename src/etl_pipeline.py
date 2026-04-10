@@ -54,38 +54,45 @@ def parse_pdf_to_markdown(source_path):
     print(f"✅ Saved parsed Markdown to: {md_filename}")
     return full_markdown_text
 
-def chunk_markdown_semantically(markdown_text):
+def chunk_markdown_semantically(
+    markdown_text,
+    *,
+    chunk_size: int = 1000,
+    chunk_overlap: int = 250,
+    headers_to_split_on: list | None = None,
+):
     """
     Phase 1: Split by Structure (Headers)
-    Phase 2: Split by Size (Token limit)
+    Phase 2: Split by Size (character window)
     """
     print("✂️ Starting Semantic Chunking...")
 
-    # 1. Split by Headers (The "Semantic" Part)
-    # LlamaParse typically generates # for Title, ## for Sections, ### for Subsections
-    headers_to_split_on = [
-        ("#", "Header 1"),
-        ("##", "Header 2"),
-        ("###", "Header 3"),
-    ]
-    
-    markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_split_on)
+    if headers_to_split_on is None:
+        headers_to_split_on = [
+            ("#", "Header 1"),
+            ("##", "Header 2"),
+            ("###", "Header 3"),
+        ]
+
+    markdown_splitter = MarkdownHeaderTextSplitter(
+        headers_to_split_on=headers_to_split_on
+    )
     header_splits = markdown_splitter.split_text(markdown_text)
-    
+
     print(f"   -> Split into {len(header_splits)} semantic sections based on headers.")
 
-    # 2. Split by Size (The "Recursive" Part)
-    # Even a single section like "Risk Factors" might be 5000 tokens. We need to slice it down.
-    # We keep the metadata from the headers attached!
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=250,
-        length_function=len, # Can use tiktoken here if preferred
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        length_function=len,
         is_separator_regex=False,
     )
-    
+
     final_chunks = text_splitter.split_documents(header_splits)
-    print(f"   -> Recursively split into {len(final_chunks)} final chunks (max 1000 chars).")
+    print(
+        f"   -> Recursively split into {len(final_chunks)} final chunks "
+        f"(chunk_size={chunk_size}, overlap={chunk_overlap})."
+    )
     return final_chunks
 
 def save_to_jsonl(chunks, source_filename):
@@ -115,21 +122,42 @@ def save_to_jsonl(chunks, source_filename):
     
     print("✅ Pipeline Complete.")
 
-def main():
-    source_path = os.path.join(RAW_DIR, FILENAME)
-    
+def run_etl(
+    pdf_filename: str | None = None,
+    *,
+    chunk_size: int | None = None,
+    chunk_overlap: int | None = None,
+    header_levels: list[tuple[str, str]] | None = None,
+) -> bool:
+    """
+    Parse PDF in data/raw/, chunk, write data/processed/corpus.jsonl.
+    Returns False if the PDF is missing.
+
+    Optional chunking overrides for experiment presets (defaults: 1000 / 250).
+    """
+    filename = pdf_filename or FILENAME
+    source_path = os.path.join(RAW_DIR, filename)
+
     if not os.path.exists(source_path):
         print(f"❌ Error: File not found at {source_path}")
-        return
+        return False
 
-    # 1. Parse
+    cs = chunk_size if chunk_size is not None else 1000
+    co = chunk_overlap if chunk_overlap is not None else 250
+
     raw_markdown = parse_pdf_to_markdown(source_path)
-    
-    # 2. Chunk
-    final_chunks = chunk_markdown_semantically(raw_markdown)
-    
-    # 3. Save
-    save_to_jsonl(final_chunks, FILENAME)
+    final_chunks = chunk_markdown_semantically(
+        raw_markdown,
+        chunk_size=cs,
+        chunk_overlap=co,
+        headers_to_split_on=header_levels,
+    )
+    save_to_jsonl(final_chunks, filename)
+    return True
+
+def main():
+    run_etl()
+
 
 if __name__ == "__main__":
     main()
