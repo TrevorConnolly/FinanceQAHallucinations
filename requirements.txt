@@ -14,3 +14,4 @@ torch
 langchain-openai
 ragas==0.4.3
 datasets
+python-pptx
