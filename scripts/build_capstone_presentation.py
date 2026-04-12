@@ -30,6 +30,9 @@ C_MUTED = RGBColor(0x4A, 0x55, 0x68)
 C_WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 C_GREEN = RGBColor(0x27, 0x6F, 0x47)
 C_ORANGE = RGBColor(0xC0, 0x56, 0x21)
+# Tier A delta chart: fixed series colors (negative bars stay colored, not white)
+C_SERIES_CONTEXT = RGBColor(0x1E, 0x5A, 0x8E)  # blue — always for Δ context halluc.
+C_SERIES_ANSWER = RGBColor(0xB9, 0x1C, 0x1C)  # red — always for Δ answer correctness
 
 
 def _blank_layout(prs: Presentation):
@@ -109,8 +112,8 @@ def _chart_tier_a_delta(slide, cross: pd.DataFrame, prs: Presentation) -> None:
 
     chart_data = CategoryChartData()
     chart_data.categories = cats
-    chart_data.add_series("Delta: context halluc. (lower better)", ctx)
-    chart_data.add_series("Delta: answer correctness (higher better)", ans)
+    chart_data.add_series("Δ context halluc. (blue = this metric; lower is better)", ctx)
+    chart_data.add_series("Δ answer correctness (red = this metric; higher is better)", ans)
 
     x, y, cx, cy = Inches(0.55), Inches(1.35), Inches(9.0), Inches(4.85)
     graphic_frame = slide.shapes.add_chart(
@@ -122,9 +125,43 @@ def _chart_tier_a_delta(slide, cross: pd.DataFrame, prs: Presentation) -> None:
         chart.legend.position = XL_LEGEND_POSITION.BOTTOM
         chart.legend.include_in_layout = False
     chart.value_axis.has_major_gridlines = True
+    _apply_fixed_series_colors(chart, C_SERIES_CONTEXT, C_SERIES_ANSWER)
     try:
         plot = chart.plots[0]
         plot.has_data_labels = True
+    except Exception:
+        pass
+
+
+def _apply_fixed_series_colors(
+    chart,
+    rgb_first: RGBColor,
+    rgb_second: RGBColor,
+) -> None:
+    """Force solid fills so negative columns stay blue/red (not theme 'inverted' white)."""
+    rgbs = [rgb_first, rgb_second]
+
+    def _paint_series(ser, rgb: RGBColor) -> None:
+        ser.format.fill.solid()
+        ser.format.fill.fore_color.rgb = rgb
+        try:
+            for pt in ser.points:
+                pt.format.fill.solid()
+                pt.format.fill.fore_color.rgb = rgb
+        except Exception:
+            pass
+
+    try:
+        for idx, rgb in enumerate(rgbs):
+            if idx < len(chart.series):
+                _paint_series(chart.series[idx], rgb)
+    except Exception:
+        pass
+    try:
+        plot = chart.plots[0]
+        for idx, rgb in enumerate(rgbs):
+            if idx < len(plot.series):
+                _paint_series(plot.series[idx], rgb)
     except Exception:
         pass
 
@@ -334,90 +371,133 @@ def main() -> None:
     # --- 3. Motivation ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
-    _title_band(slide, prs, "Motivation", "Precision industries need reliable grounded answers")
+    _title_band(
+        slide,
+        prs,
+        "Motivation & goal",
+        "Industry-relevant RAG for finance & healthcare text",
+    )
     _body_box(
         slide,
         0.65,
-        1.4,
-        4.2,
-        5.0,
+        1.32,
+        5.35,
+        3.35,
         [
-            "Goal: Compare RAG configurations on real finance + healthcare PDFs.",
-            "Measure hallucination-related failure vs answer quality — same harness, varied designs.",
-            "Outcome: Actionable tradeoffs for teams deploying AI on sensitive text.",
+            "Professionals are adopting AI for productivity, but in finance and healthcare answers must be precise and auditable.",
+            "Hallucinations are the main blocker to trust—especially when data is sensitive or regulated.",
+            "Goal of this project: empirically compare RAG system designs (retrieval, prompting, citations, chunking) and measure which configurations best reduce hallucination-style failures while preserving answer quality.",
+            "I also ask whether certain designs work better with different document types (e.g., SEC filings vs FDA labels) so teams can tune RAG with evidence—not guesswork.",
         ],
-        17,
+        14,
     )
     call = slide.shapes.add_shape(
         MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
-        Inches(5.1),
-        Inches(1.95),
-        Inches(4.25),
-        Inches(2.0),
+        Inches(6.05),
+        Inches(1.32),
+        Inches(3.35),
+        Inches(3.35),
     )
     call.fill.solid()
     call.fill.fore_color.rgb = RGBColor(0xFF, 0xFA, 0xEC)
     call.line.color.rgb = C_ORANGE
     tf = call.text_frame
-    tf.text = "Industry signal\n(EY)"
+    tf.word_wrap = True
+    tf.text = "Industry perspective (EY)"
     tf.paragraphs[0].font.bold = True
-    tf.paragraphs[0].font.size = Pt(14)
+    tf.paragraphs[0].font.size = Pt(13)
     tf.paragraphs[0].font.color.rgb = C_ORANGE
-    p2 = tf.add_paragraph()
-    p2.text = (
-        "Clients rank hallucinations #1 risk for AI on sensitive data — "
-        "even when efficiency gains are clear."
-    )
-    p2.font.size = Pt(13)
-    p2.font.color.rgb = C_MUTED
-
-    # --- 4. Related work (compact) ---
-    slide = prs.slides.add_slide(blank)
-    _set_slide_bg(slide)
-    _title_band(slide, prs, "Background", "Hallucinations persist even with RAG")
-    for i, (head, txt) in enumerate(
-        [
-            ("Consensus", "RAG grounds answers but does not remove unsupported generations."),
-            ("Literature", "Surveys cover taxonomy, detection (faithfulness judges), mitigation."),
-            ("Gap", "Less empirical guidance on which RAG knobs work for which document genres."),
-        ]
-    ):
-        y = 1.45 + i * 1.75
-        sh = slide.shapes.add_shape(
-            MSO_AUTO_SHAPE_TYPE.RECTANGLE,
-            Inches(0.7),
-            Inches(y),
-            Inches(8.6),
-            Inches(1.45),
-        )
-        sh.fill.solid()
-        sh.fill.fore_color.rgb = RGBColor(0xED, 0xF2, 0xF7)
-        sh.line.color.rgb = RGBColor(0xCB, 0xD5, 0xE0)
-        tf = sh.text_frame
-        tf.text = f"{head}: {txt}"
-        tf.paragraphs[0].font.size = Pt(15)
-        tf.paragraphs[0].font.color.rgb = C_PRIMARY
-        tf.paragraphs[0].font.bold = True
-
-    # --- 5. Pipeline visual ---
-    slide = prs.slides.add_slide(blank)
-    _set_slide_bg(slide)
-    _title_band(slide, prs, "Implementation", "End-to-end evaluation pipeline")
-    _pipeline_visual(slide, prs)
+    for line in [
+        "AI & data technology consulting (EY): client concern about hallucinations and reliability on sensitive workloads.",
+        "Interviews with tech risk partners: among customer complaints, trust and hallucinations rank at the top—even when efficiency benefits are clear.",
+        "This work connects that practitioner concern to a reproducible evaluation harness.",
+    ]:
+        p = tf.add_paragraph()
+        p.text = line
+        p.font.size = Pt(11)
+        p.font.color.rgb = C_MUTED
+        p.space_after = Pt(4)
     _body_box(
         slide,
         0.65,
-        5.05,
-        8.7,
-        1.9,
+        4.85,
+        8.75,
+        2.35,
         [
-            "Tools: LlamaParse, LangChain chunking, Chroma, BGE reranker, OpenAI GPT-4o.",
-            "Metrics: recall & citations, LLM judge (context/claims), RAGAS scores.",
+            "Who benefits: any organization deploying RAG on dense technical prose—risk, compliance, clinical ops, IR, research analysts.",
+        ],
+        13,
+    )
+
+    # --- 4. Background & related work ---
+    slide = prs.slides.add_slide(blank)
+    _set_slide_bg(slide)
+    _title_band(
+        slide,
+        prs,
+        "Background & related work",
+        "Where NLP consensus stands",
+    )
+    _body_box(
+        slide,
+        0.65,
+        1.3,
+        8.75,
+        5.7,
+        [
+            "Consensus: LLMs can sound authoritative while stating content not supported by evidence. Retrieval-Augmented Generation (RAG) grounds answers in retrieved passages and usually reduces—but does not remove—unsupported or conflicting outputs.",
+            "Research surveys (e.g., recent arXiv surveys on LLM hallucinations; RAG mitigation reviews) organize causes: bad retrieval, context overload, parametric knowledge overriding evidence, and evaluation gaps.",
+            "Industry products: many vendors offer RAG stacks, guardrails, and observability—yet defaults are often tuned for generic chat, not long regulatory PDFs or filings.",
+            "Gap this project fills: controlled comparison of concrete RAG knobs on real finance vs healthcare-style documents, with multi-metric evaluation (grounding judges + automated scores)—not only a single accuracy number.",
         ],
         14,
     )
 
-    # --- 6. Tier A chart: delta vs baseline ---
+    # --- 5. Implementation ---
+    slide = prs.slides.add_slide(blank)
+    _set_slide_bg(slide)
+    _title_band(slide, prs, "Implementation", "Pipeline, experiments, and evaluation stack")
+    _pipeline_visual(slide, prs)
+    _body_box(
+        slide,
+        0.6,
+        4.95,
+        8.85,
+        2.35,
+        [
+            "Ingestion: LlamaParse converts PDFs to Markdown; LangChain splits on headings + fixed window size (preset-specific for chunk ablations).",
+            "Retrieval: vector store (Chroma) + BM25 + cross-encoder rerank (BGE). Generation: GPT-4o with mandatory chunk-ID citations; optional strict post-process (replace answer with “Insufficient Information.” if cites are invalid or missing).",
+            "Gold questions: synthetic Q/A from sampled chunks + critique filter. Experiments: baseline (k=5), k∈{3,8,10}, chain-of-thought prompt, strict-cite, k8+CoT; Tier B varies chunking presets with regenerated gold.",
+            "Evaluation: n=10 questions per run in this study; rule metrics (recall@k, citation checks), dedicated LLM judge for context-grounded hallucinations & claim rates, RAGAS (faithfulness, relevancy, correctness).",
+        ],
+        12,
+    )
+
+    # --- 6. Results overview (before charts) ---
+    slide = prs.slides.add_slide(blank)
+    _set_slide_bg(slide)
+    _title_band(
+        slide,
+        prs,
+        "Results — what you are about to see",
+        "How experiments & tiers are defined",
+    )
+    _body_box(
+        slide,
+        0.65,
+        1.28,
+        8.75,
+        5.75,
+        [
+            "Data: four public PDFs — two SEC-style 10-Ks and two FDA drug labels — same code path, different corpora.",
+            "Tier A (same chunking & gold): fair comparison of presets against baseline—same 10 evaluation questions and gold chunk IDs. Includes baseline, top-k variants, CoT, strict citations, k8+CoT.",
+            "Tier B (chunking ablations): fine / coarse / deep-header presets each rebuild the corpus and regenerate gold — not the same questions as Tier A. Interpret Tier B as “alternative chunking strategies,” not as Δ vs Tier A baseline.",
+            "Charts: cross-corpus bars show mean change vs baseline averaged over all four documents. Tables pool metrics by genre (finance vs FDA labels). Colors: blue series = Δ context-hallucination flag; red = Δ answer correctness (negative values stay colored).",
+        ],
+        14,
+    )
+
+    # --- 7. Tier A chart: delta vs baseline ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
     _title_band(
@@ -430,18 +510,18 @@ def main() -> None:
     _body_box(
         slide,
         0.55,
-        6.35,
+        6.32,
         9.1,
-        0.85,
+        1.05,
         [
-            "Left bars: lower context-hallucination flag is better. Right bars: higher answer correctness is better.",
-            "k3 best avg drop in hallucination flag; k8+CoT best avg gain in correctness but raises hallucination flag on average.",
+            "Blue columns = Δ context-hallucination flag (lower is better). Red = Δ answer correctness (higher is better). Colors stay blue/red even when Δ is negative.",
+            "Pattern: k3 shows the largest average reduction in the hallucination flag vs baseline; k8+CoT shows the largest average gain in correctness but also increases the hallucination flag on average—a tradeoff.",
         ],
-        11,
+        10,
         C_MUTED,
     )
 
-    # --- 7. Table pooled by industry ---
+    # --- 8. Table pooled by industry ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
     _title_band(
@@ -463,7 +543,7 @@ def main() -> None:
         12,
     )
 
-    # --- 8. Genre comparison chart ---
+    # --- 9. Genre comparison chart ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
     _title_band(
@@ -485,7 +565,7 @@ def main() -> None:
         11,
     )
 
-    # --- 9. Tier B table ---
+    # --- 10. Tier B table ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
     _title_band(
@@ -508,46 +588,55 @@ def main() -> None:
         13,
     )
 
-    # --- 10. Design takeaway (visual) ---
+    # --- 11. Design takeaway / synthesis ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
-    _title_band(slide, prs, "Design takeaway", "Tradeoffs, not a single winner")
+    _title_band(
+        slide,
+        prs,
+        "Design takeaway — answering the core questions",
+        "What the data suggests for practitioners",
+    )
     for i, (label, col) in enumerate(
         [
-            ("Retrieval depth (k)", C_ACCENT),
+            ("Retrieval (k)", C_ACCENT),
             ("Prompting (CoT)", C_PRIMARY),
-            ("Strict citations", C_GREEN),
+            ("Strict cites", C_GREEN),
         ]
     ):
         sh = slide.shapes.add_shape(
             MSO_AUTO_SHAPE_TYPE.OVAL,
-            Inches(1.2 + i * 2.6),
-            Inches(2.1),
-            Inches(2.0),
-            Inches(2.0),
+            Inches(0.85 + i * 2.85),
+            Inches(1.38),
+            Inches(1.75),
+            Inches(1.75),
         )
         sh.fill.solid()
         sh.fill.fore_color.rgb = col
         tf = sh.text_frame
         tf.text = label
-        tf.paragraphs[0].font.size = Pt(12)
+        tf.paragraphs[0].font.size = Pt(11)
         tf.paragraphs[0].font.bold = True
         tf.paragraphs[0].font.color.rgb = C_WHITE
         tf.paragraphs[0].alignment = PP_ALIGN.CENTER
     _body_box(
         slide,
-        0.7,
-        4.85,
-        8.6,
-        2.2,
+        0.65,
+        3.35,
+        8.85,
+        3.85,
         [
-            "Choose metrics first: minimize hallucination flag vs maximize correctness vs force abstention.",
-            "Pilot n=10 — directional; scale n for confidence.",
+            "Fundamental question: which RAG design best reduces hallucinations for professional use? On average across four corpora, k=3 (narrower retrieval) delivered the largest reduction in the context-grounded hallucination flag vs baseline—suggesting smaller top-k can reduce unsupported content when the right passages are still retrieved.",
+            "Tradeoff: k8 + chain-of-thought delivered the largest average gain in answer correctness vs baseline, but also the largest average increase in the hallucination flag vs baseline. So “best for correctness” and “best for grounding” are not the same preset.",
+            "Industry nuance: pooled 10-Ks showed higher recall@5 than pooled FDA labels in this setup—retrieval difficulty differs by genre. No single winner for both finance-style and label-style text; teams should pick metrics (grounding vs correctness vs abstention) first, then select a preset.",
+            "Strict citation post-processing: near-zero average change in the hallucination flag in the aggregate, with a small average drop in correctness—consistent with more forced abstention when cites are imperfect.",
+            "Tier B (chunking): compare chunk presets within that tier only; they use different gold questions—useful for chunking strategy, not for ranking against Tier A deltas.",
         ],
-        15,
+        12,
+        C_MUTED,
     )
 
-    # --- 11. Limitations ---
+    # --- 12. Limitations ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
     _title_band(slide, prs, "Limitations & next steps", "")
@@ -566,7 +655,7 @@ def main() -> None:
         17,
     )
 
-    # --- 12. Conclusion ---
+    # --- 13. Conclusion ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
     _title_band(slide, prs, "Conclusion", "")
