@@ -639,38 +639,46 @@ def main() -> None:
     # --- 12. Limitations ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
-    _title_band(slide, prs, "Limitations & next steps", "")
+    _title_band(
+        slide,
+        prs,
+        "Limitations & next steps",
+        "Honest scope — and how I would extend the work",
+    )
     _body_box(
         slide,
-        0.75,
-        1.45,
-        8.5,
-        5.5,
+        0.65,
+        1.32,
+        8.85,
+        5.85,
         [
-            "• n=10 questions / experiment — exploratory.",
-            "• Four PDFs — illustrative genres, not universal finance/healthcare.",
-            "• LLM judges add variance; triangulate with rule-based metrics.",
-            "• Next: larger n, CIs, more rerankers & abstention policies.",
+            "Sample size: Each experiment used 10 evaluated questions per corpus. That is enough to see directional patterns and engineering tradeoffs, but not to claim statistical significance or stable rankings—one or two hard questions can move averages.",
+            "Generalization: Four long PDFs (two 10-Ks, two FDA labels) illustrate SEC-style financial prose vs regulatory drug-label prose. Results should not be read as covering all of finance or healthcare (e.g., earnings calls, EHR notes, or other jurisdictions).",
+            "Metrics: RAGAS scores and our LLM judges depend on model choice and prompts; they can disagree with each other. Rule-based metrics (recall, citation checks) are more stable but do not capture every failure mode. Human spot-checks would strengthen claims.",
+            "Operational reality: Runs depend on OpenAI and LlamaParse availability, cost, and rate limits; reproduction requires the same tooling or careful substitution.",
+            "Next steps I would prioritize: (1) increase n and report confidence intervals or bootstrap bands; (2) add more corpora per genre; (3) optional human evaluation on a stratified subset; (4) test additional rerankers and abstention thresholds; (5) document-type-specific chunking defaults informed by Tier B–style ablations at larger n.",
         ],
-        17,
+        13,
     )
 
     # --- 13. Conclusion ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
-    _title_band(slide, prs, "Conclusion", "")
+    _title_band(slide, prs, "Conclusion", "What we set out to do — what we learned")
     _body_box(
         slide,
-        0.85,
-        1.55,
-        8.3,
-        5.0,
+        0.65,
+        1.32,
+        8.85,
+        5.85,
         [
-            "RAG design choices measurably shift grounding vs correctness — differently on 10-Ks vs FDA labels.",
-            "Deliverable: reproducible pipeline + data-driven comparison tables for practitioners.",
-            "Thank you — questions?",
+            "Problem: Organizations need reliable, grounded AI for dense professional text; hallucinations block adoption even when efficiency gains are real.",
+            "What this project did: Built an end-to-end RAG evaluation pipeline and compared multiple system designs on real finance and healthcare documents, with tiered experiments (same-gold vs chunking ablations) and multi-metric scoring.",
+            "What the results suggest: There is no single “best” RAG preset for every industry or metric—narrower retrieval (e.g., k=3) leaned toward lower hallucination flags on average, while richer retrieval plus chain-of-thought leaned toward higher answer correctness but worse average hallucination flags—a tradeoff practitioners must choose explicitly.",
+            "Deliverable: A reproducible codebase, logged runs, and aggregated tables/charts that teams can extend with their own PDFs and larger evaluation sets.",
+            "Thank you — I am happy to take questions.",
         ],
-        22,
+        16,
         C_PRIMARY,
     )
 
