@@ -21,11 +21,23 @@ PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 # 3. Define paths relative to the Project Root
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 PROCESSED_DIR = os.path.join(DATA_DIR, "processed")
-CORPUS_PATH = os.path.join(PROCESSED_DIR, "corpus.jsonl")
+# Per-corpus runs: set RAG_CORPUS_JSONL relative to project root or absolute.
+_corpus_env = os.environ.get("RAG_CORPUS_JSONL")
+if _corpus_env:
+    CORPUS_PATH = (
+        os.path.abspath(_corpus_env)
+        if os.path.isabs(_corpus_env)
+        else os.path.normpath(os.path.join(PROJECT_ROOT, _corpus_env))
+    )
+else:
+    CORPUS_PATH = os.path.join(PROCESSED_DIR, "corpus.jsonl")
 
 # Output Paths (Where the DB lives)
 OUTPUTS_DIR = os.path.join(PROJECT_ROOT, "outputs")
-CHROMA_PATH = os.path.join(OUTPUTS_DIR, "chroma_db")
+# Per-corpus runs: set RAG_CHROMA_SUBDIR (e.g. chroma_nvidia10k2026) so indexes do not overwrite.
+CHROMA_PATH = os.path.join(
+    OUTPUTS_DIR, os.environ.get("RAG_CHROMA_SUBDIR", "chroma_db")
+)
 BM25_PATH = os.path.join(OUTPUTS_DIR, "bm25_model.pkl")
 
 # Ensure the output directory exists

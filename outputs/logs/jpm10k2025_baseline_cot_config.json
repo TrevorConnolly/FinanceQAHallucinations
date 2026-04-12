@@ -1,0 +1,9 @@
+{
+  "experiment_id": "baseline_cot",
+  "top_k": 5,
+  "prompt_preset": "chain_of_thought",
+  "strict_citation_postprocess": false,
+  "chunk_size": 1000,
+  "chunk_overlap": 250,
+  "header_preset": "standard"
+}

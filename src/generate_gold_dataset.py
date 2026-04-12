@@ -10,9 +10,13 @@ from tqdm import tqdm
 load_dotenv()
 CLIENT = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Paths
-INPUT_CORPUS = "data/processed/corpus.jsonl"
-OUTPUT_CSV = "data/synthetic/gold_dataset.csv"
+# Paths (override per corpus: RAG_CORPUS_JSONL, RAG_GOLD_CSV)
+def _input_corpus() -> str:
+    return os.environ.get("RAG_CORPUS_JSONL", "data/processed/corpus.jsonl")
+
+
+def _output_gold_csv() -> str:
+    return os.environ.get("RAG_GOLD_CSV", "data/synthetic/gold_dataset.csv")
 
 # Hyperparameters
 SAMPLE_SIZE = 50          # How many chunks to attempt
@@ -111,7 +115,7 @@ def critique_question(question, answer, chunk_text):
 def run_gold_generation(sample_size: int | None = None) -> None:
     """Sample chunks from INPUT_CORPUS and write synthetic gold_dataset.csv."""
     size = sample_size if sample_size is not None else SAMPLE_SIZE
-    all_chunks = load_chunks(INPUT_CORPUS)
+    all_chunks = load_chunks(_input_corpus())
 
     if len(all_chunks) < size:
         selected_chunks = all_chunks
@@ -144,13 +148,16 @@ def run_gold_generation(sample_size: int | None = None) -> None:
             )
 
     df = pd.DataFrame(gold_data)
-    os.makedirs(os.path.dirname(OUTPUT_CSV), exist_ok=True)
-    df.to_csv(OUTPUT_CSV, index=False)
+    out_csv = _output_gold_csv()
+    _dir = os.path.dirname(out_csv)
+    if _dir:
+        os.makedirs(_dir, exist_ok=True)
+    df.to_csv(out_csv, index=False)
 
     print(f"\n✅ Generation Complete!")
     print(f"Total Attempted: {len(selected_chunks)}")
     print(f"Total Passed Critique: {len(df)}")
-    print(f"💾 Saved to: {OUTPUT_CSV}")
+    print(f"💾 Saved to: {out_csv}")
 
 
 def main():

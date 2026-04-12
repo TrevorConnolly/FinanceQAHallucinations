@@ -1,0 +1,9 @@
+{
+  "experiment_id": "k3",
+  "top_k": 3,
+  "prompt_preset": "default",
+  "strict_citation_postprocess": false,
+  "chunk_size": 1000,
+  "chunk_overlap": 250,
+  "header_preset": "standard"
+}

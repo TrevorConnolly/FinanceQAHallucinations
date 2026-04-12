@@ -1,0 +1,9 @@
+{
+  "experiment_id": "deep_headers_fine",
+  "top_k": 5,
+  "prompt_preset": "default",
+  "strict_citation_postprocess": false,
+  "chunk_size": 700,
+  "chunk_overlap": 140,
+  "header_preset": "deep"
+}

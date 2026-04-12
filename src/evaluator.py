@@ -62,10 +62,16 @@ def run_evaluation_pipeline(
     unless ``output_results_path`` is set.
     """
     exp = experiment or get_experiment("baseline")
-    out_csv = output_results_path or os.path.join(
-        LOGS_DIR, f"{exp.experiment_id}_results.csv"
-    )
-    save_experiment_snapshot(exp, LOGS_DIR)
+    corpus_tag = os.environ.get("RAG_CORPUS_ID", "").strip()
+    if output_results_path:
+        out_csv = output_results_path
+    elif corpus_tag:
+        out_csv = os.path.join(
+            LOGS_DIR, f"{corpus_tag}_{exp.experiment_id}_results.csv"
+        )
+    else:
+        out_csv = os.path.join(LOGS_DIR, f"{exp.experiment_id}_results.csv")
+    save_experiment_snapshot(exp, LOGS_DIR, corpus_id=corpus_tag or None)
 
     print(
         f"Initializing Evaluation Pipeline (experiment={exp.experiment_id})..."
@@ -79,7 +85,8 @@ def run_evaluation_pipeline(
     else:
         limit = TEST_LIMIT
 
-    df_gold = pd.read_csv(GOLD_DATASET_PATH)
+    gold_path = os.environ.get("RAG_GOLD_CSV", GOLD_DATASET_PATH)
+    df_gold = pd.read_csv(gold_path)
     if limit is not None:
         df_gold = df_gold.head(limit)
         print(f"   -> Evaluating {len(df_gold)} question(s) (limit={limit}).")

@@ -1,0 +1,13 @@
+corpus_id,genre,industry_label,experiment,n_rows,recall_at_5,recall_at_5_n_nan,citation_hallucination,citation_hallucination_n_nan,gold_chunk_cited,gold_chunk_cited_n_nan,context_hallucination,context_hallucination_n_nan,claim_level_hallucination_rate,claim_level_hallucination_rate_n_nan,faithfulness,faithfulness_n_nan,answer_relevancy,answer_relevancy_n_nan,answer_correctness,answer_correctness_n_nan
+nvidia10k2026,finance_10k,Finance (10-K),fine_chunks,10,1.0,0,0.0,0,0.9,0,0.1,0,0.044444444444444446,1,1.0,0,0.6551122320464262,0,0.8024096288307557,0
+nvidia10k2026,finance_10k,Finance (10-K),coarse_chunks,10,0.9,0,0.0,0,0.8,0,0.2,0,0.1,0,0.798235294117647,0,0.8594585849531524,0,0.8321554605810842,0
+nvidia10k2026,finance_10k,Finance (10-K),deep_headers_fine,10,1.0,0,0.0,0,0.9,0,0.0,0,0.0,1,0.7125,0,0.7810774246466319,0,0.7292158289228954,0
+jpm10k2025,finance_10k,Finance (10-K),fine_chunks,10,1.0,0,0.0,0,0.9,0,0.0,0,0.0,0,0.925,0,0.8764633318301664,0,0.8669894266674241,0
+jpm10k2025,finance_10k,Finance (10-K),coarse_chunks,10,1.0,0,0.0,0,1.0,0,0.3,0,0.07499999999999998,0,0.8829411764705881,0,0.7966551929822716,0,0.7854593919711023,0
+jpm10k2025,finance_10k,Finance (10-K),deep_headers_fine,10,1.0,0,0.0,0,0.8,0,0.1,0,0.025,2,0.7291666666666666,0,0.6894857828830745,0,0.6565339684054352,0
+humira_label,fda_label,Healthcare (FDA label),fine_chunks,10,0.8,0,0.0,0,0.7,0,0.0,0,0.0,1,0.975,0,0.7223785696499522,0,0.670446722475703,0
+humira_label,fda_label,Healthcare (FDA label),coarse_chunks,10,0.8,0,0.0,0,0.7,0,0.2,0,0.13333333333333333,1,0.9357142857142857,0,0.7930265885580647,0,0.8192868203978018,0
+humira_label,fda_label,Healthcare (FDA label),deep_headers_fine,10,0.9,0,0.0,0,0.7,0,0.1,0,0.125,2,0.7916666666666666,0,0.7336382848749399,0,0.7314849827517096,0
+keytruda_label,fda_label,Healthcare (FDA label),fine_chunks,10,0.6,0,0.0,0,0.3,0,0.0,0,0.0,5,0.5,0,0.4431986191474045,0,0.4308933386671545,0
+keytruda_label,fda_label,Healthcare (FDA label),coarse_chunks,10,0.7,0,0.0,0,0.7,0,0.0,0,0.0,3,0.675,0,0.6469236308050407,0,0.6604840376032484,0
+keytruda_label,fda_label,Healthcare (FDA label),deep_headers_fine,10,0.5,0,0.0,0,0.4,0,0.1,0,0.125,6,0.8083333333333332,0,0.3772481762962947,0,0.4006497801636882,0

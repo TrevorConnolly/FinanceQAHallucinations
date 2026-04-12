@@ -1,0 +1,46 @@
+
+========== NEW RUN 2026-04-12T02:32:51.290978 ==========
+pdf=Humira_Label.pdf corpus_id=humira_label eval_limit=10
+
+[2026-04-12T02:32:51.291060] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Humira_Label.pdf --experiment baseline --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-12T02:34:36.282845] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment baseline --eval-limit 10
+exit=0
+
+[2026-04-12T02:37:00.492162] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k3 --eval-limit 10
+exit=0
+
+[2026-04-12T02:39:39.807911] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k8 --eval-limit 10
+exit=0
+
+[2026-04-12T02:43:13.670068] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k10 --eval-limit 10
+exit=0
+
+[2026-04-12T02:47:05.421561] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment baseline_cot --eval-limit 10
+exit=0
+
+[2026-04-12T02:50:48.944219] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment baseline_strict_cite --eval-limit 10
+exit=0
+
+[2026-04-12T02:53:46.483090] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k8_cot --eval-limit 10
+exit=0
+
+[2026-04-12T02:57:59.211408] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Humira_Label.pdf --experiment fine_chunks --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-12T02:59:42.639746] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment fine_chunks --eval-limit 10
+exit=0
+
+[2026-04-12T03:02:31.581464] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Humira_Label.pdf --experiment coarse_chunks --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-12T03:04:41.368523] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment coarse_chunks --eval-limit 10
+exit=0
+
+[2026-04-12T03:07:32.077871] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Humira_Label.pdf --experiment deep_headers_fine --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-12T03:09:21.776896] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment deep_headers_fine --eval-limit 10
+exit=0
+========== COMPLETE 2026-04-12T03:11:55.583604 ==========

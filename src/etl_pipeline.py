@@ -20,13 +20,18 @@ OUTPUT_JSONL = os.path.join(PROCESSED_DIR, "corpus.jsonl")
 # Ensure processed directory exists
 os.makedirs(PROCESSED_DIR, exist_ok=True)
 
-def parse_pdf_to_markdown(source_path):
+def parse_pdf_to_markdown(source_path, md_filename: str | None = None):
     """
     Uses LlamaParse to convert PDF -> Markdown.
     Checks if a .md file already exists to save API credits.
+
+    If md_filename is set (e.g. alongside a per-corpus corpus.jsonl), writes there.
     """
-    md_filename = source_path.replace(".pdf", ".md").replace(RAW_DIR, PROCESSED_DIR)
-    
+    if md_filename is None:
+        md_filename = source_path.replace(".pdf", ".md").replace(RAW_DIR, PROCESSED_DIR)
+
+    os.makedirs(os.path.dirname(os.path.abspath(md_filename)), exist_ok=True)
+
     if os.path.exists(md_filename):
         print(f"✅ Found cached Markdown file: {md_filename}")
         with open(md_filename, "r", encoding="utf-8") as f:
@@ -95,13 +100,15 @@ def chunk_markdown_semantically(
     )
     return final_chunks
 
-def save_to_jsonl(chunks, source_filename):
+def save_to_jsonl(chunks, source_filename, output_jsonl: str | None = None):
     """
     Injects UUID, Source, and Metadata. Saves to JSONL.
     """
-    print(f"💾 Saving to {OUTPUT_JSONL}...")
-    
-    with open(OUTPUT_JSONL, 'w', encoding='utf-8') as f:
+    out = output_jsonl or OUTPUT_JSONL
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+    print(f"💾 Saving to {out}...")
+
+    with open(out, "w", encoding="utf-8") as f:
         for chunk in chunks:
             # Create Audit-Grade ID
             chunk_id = str(uuid.uuid4())
@@ -145,14 +152,25 @@ def run_etl(
     cs = chunk_size if chunk_size is not None else 1000
     co = chunk_overlap if chunk_overlap is not None else 250
 
-    raw_markdown = parse_pdf_to_markdown(source_path)
+    corpus_jsonl = os.environ.get("RAG_CORPUS_JSONL", OUTPUT_JSONL)
+    if not os.path.isabs(corpus_jsonl):
+        # relative to cwd (repo root when running from project root)
+        corpus_jsonl = os.path.abspath(corpus_jsonl)
+    os.makedirs(os.path.dirname(corpus_jsonl), exist_ok=True)
+
+    md_filename = os.path.join(
+        os.path.dirname(corpus_jsonl),
+        os.path.basename(source_path).replace(".pdf", ".md"),
+    )
+
+    raw_markdown = parse_pdf_to_markdown(source_path, md_filename=md_filename)
     final_chunks = chunk_markdown_semantically(
         raw_markdown,
         chunk_size=cs,
         chunk_overlap=co,
         headers_to_split_on=header_levels,
     )
-    save_to_jsonl(final_chunks, filename)
+    save_to_jsonl(final_chunks, filename, output_jsonl=corpus_jsonl)
     return True
 
 def main():

@@ -1,7 +1,9 @@
 import os
 import re
+import time
 from dotenv import load_dotenv
 from openai import OpenAI
+from openai import RateLimitError
 from vector_store import FinancialRetriever
 from experiment_config import RAGExperimentConfig, build_system_prompt, get_experiment
 
@@ -81,14 +83,26 @@ class AuditRAGGenerator:
         user_prompt = f"CONTEXT:\n{context_string}\n\nQUESTION: {question}"
 
         print("Generating audited response...")
-        response = CLIENT.chat.completions.create(
-            model=MODEL_NAME,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=0.0,
-        )
+        delay = 1.0
+        max_attempts = 12
+        response = None
+        for attempt in range(max_attempts):
+            try:
+                response = CLIENT.chat.completions.create(
+                    model=MODEL_NAME,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=0.0,
+                )
+                break
+            except RateLimitError:
+                if attempt == max_attempts - 1:
+                    raise
+                time.sleep(delay)
+                delay = min(delay * 1.5, 60.0)
+        assert response is not None
 
         answer = response.choices[0].message.content
 

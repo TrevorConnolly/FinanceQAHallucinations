@@ -1,0 +1,9 @@
+{
+  "experiment_id": "coarse_chunks",
+  "top_k": 5,
+  "prompt_preset": "default",
+  "strict_citation_postprocess": false,
+  "chunk_size": 1500,
+  "chunk_overlap": 300,
+  "header_preset": "standard"
+}

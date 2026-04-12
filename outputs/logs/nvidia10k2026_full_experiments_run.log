@@ -1,0 +1,46 @@
+
+========== NEW RUN 2026-04-11T20:10:34.762332 ==========
+pdf=Nvidia10k2026.pdf corpus_id=nvidia10k2026 eval_limit=10
+
+[2026-04-11T20:10:34.762418] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Nvidia10k2026.pdf --experiment baseline --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-11T20:12:31.541084] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment baseline --eval-limit 10
+exit=0
+
+[2026-04-11T20:15:18.614267] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k3 --eval-limit 10
+exit=0
+
+[2026-04-11T20:18:01.245671] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k8 --eval-limit 10
+exit=0
+
+[2026-04-11T20:22:11.924087] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k10 --eval-limit 10
+exit=0
+
+[2026-04-11T20:26:18.255649] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment baseline_cot --eval-limit 10
+exit=0
+
+[2026-04-11T20:30:00.256206] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment baseline_strict_cite --eval-limit 10
+exit=0
+
+[2026-04-11T20:33:21.384199] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k8_cot --eval-limit 10
+exit=0
+
+[2026-04-11T20:37:44.860891] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Nvidia10k2026.pdf --experiment fine_chunks --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-11T20:39:41.255606] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment fine_chunks --eval-limit 10
+exit=0
+
+[2026-04-11T20:42:08.475076] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Nvidia10k2026.pdf --experiment coarse_chunks --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-11T20:43:46.462416] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment coarse_chunks --eval-limit 10
+exit=0
+
+[2026-04-11T20:47:12.129961] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Nvidia10k2026.pdf --experiment deep_headers_fine --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-11T20:49:05.979657] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment deep_headers_fine --eval-limit 10
+exit=0
+========== COMPLETE 2026-04-11T20:51:32.950613 ==========

@@ -1,0 +1,46 @@
+
+========== NEW RUN 2026-04-12T09:29:34.759427 ==========
+pdf=Keytruda_Label.pdf corpus_id=keytruda_label eval_limit=10
+
+[2026-04-12T09:29:34.759507] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Keytruda_Label.pdf --experiment baseline --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-12T09:31:48.460982] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment baseline --eval-limit 10
+exit=0
+
+[2026-04-12T09:34:32.114791] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k3 --eval-limit 10
+exit=0
+
+[2026-04-12T09:37:12.676861] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k8 --eval-limit 10
+exit=0
+
+[2026-04-12T09:41:10.027046] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k10 --eval-limit 10
+exit=0
+
+[2026-04-12T09:45:20.184639] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment baseline_cot --eval-limit 10
+exit=0
+
+[2026-04-12T09:48:54.471601] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment baseline_strict_cite --eval-limit 10
+exit=0
+
+[2026-04-12T09:52:00.703569] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k8_cot --eval-limit 10
+exit=0
+
+[2026-04-12T09:56:21.594859] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Keytruda_Label.pdf --experiment fine_chunks --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-12T09:58:10.341141] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment fine_chunks --eval-limit 10
+exit=0
+
+[2026-04-12T10:00:36.311286] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Keytruda_Label.pdf --experiment coarse_chunks --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-12T10:02:46.458786] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment coarse_chunks --eval-limit 10
+exit=0
+
+[2026-04-12T10:05:49.243398] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf Keytruda_Label.pdf --experiment deep_headers_fine --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-12T10:07:49.426621] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment deep_headers_fine --eval-limit 10
+exit=0
+========== COMPLETE 2026-04-12T10:10:14.609488 ==========

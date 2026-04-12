@@ -1,0 +1,38 @@
+
+========== NEW RUN 2026-04-12T01:42:35.907646 ==========
+pdf=JPM10k2025.pdf corpus_id=jpm10k2025 eval_limit=10
+
+[2026-04-12T01:42:35.907863] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --pdf JPM10k2025.pdf --experiment baseline --skip-eval --gold-sample-size 50
+exit=0
+
+[2026-04-12T01:44:50.998354] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment baseline --eval-limit 10
+exit=0
+
+[2026-04-12T01:47:25.661737] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k3 --eval-limit 10
+exit=0
+
+[2026-04-12T01:50:17.431285] /Users/trevorconnolly/FinanceQAHallucinations-1/venv/bin/python3 src/run_pipeline.py --skip-etl --skip-gold --skip-rebuild-index --experiment k8 --eval-limit 10
+exit=1
+[2026-04-12T01:51:26-04:00] --skip-etl --skip-gold --skip-rebuild-index --experiment k8 --eval-limit 10
+exit=0
+[2026-04-12T01:55:26-04:00] --skip-etl --skip-gold --skip-rebuild-index --experiment k10 --eval-limit 10
+exit=0
+[2026-04-12T01:59:30-04:00] --skip-etl --skip-gold --skip-rebuild-index --experiment baseline_cot --eval-limit 10
+exit=0
+[2026-04-12T02:03:37-04:00] --skip-etl --skip-gold --skip-rebuild-index --experiment baseline_strict_cite --eval-limit 10
+exit=0
+[2026-04-12T02:06:42-04:00] --skip-etl --skip-gold --skip-rebuild-index --experiment k8_cot --eval-limit 10
+exit=0
+[2026-04-12T02:11:07-04:00] --pdf JPM10k2025.pdf --experiment fine_chunks --skip-eval --gold-sample-size 50
+exit=0
+[2026-04-12T02:13:45-04:00] --skip-etl --skip-gold --skip-rebuild-index --experiment fine_chunks --eval-limit 10
+exit=0
+[2026-04-12T02:16:47-04:00] --pdf JPM10k2025.pdf --experiment coarse_chunks --skip-eval --gold-sample-size 50
+exit=0
+[2026-04-12T02:19:19-04:00] --skip-etl --skip-gold --skip-rebuild-index --experiment coarse_chunks --eval-limit 10
+exit=0
+[2026-04-12T02:23:09-04:00] --pdf JPM10k2025.pdf --experiment deep_headers_fine --skip-eval --gold-sample-size 50
+exit=0
+[2026-04-12T02:25:43-04:00] --skip-etl --skip-gold --skip-rebuild-index --experiment deep_headers_fine --eval-limit 10
+exit=0
+========== RESUME COMPLETE 2026-04-12T02:28:18-04:00 ==========

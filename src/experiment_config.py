@@ -150,9 +150,14 @@ def build_system_prompt(preset: str) -> str:
     return PROMPT_PRESETS[preset]
 
 
-def save_experiment_snapshot(config: RAGExperimentConfig, logs_dir: str) -> Path:
+def save_experiment_snapshot(
+    config: RAGExperimentConfig,
+    logs_dir: str,
+    corpus_id: str | None = None,
+) -> Path:
     """Write JSON next to results for reproducibility."""
-    path = Path(logs_dir) / f"{config.experiment_id}_config.json"
+    prefix = f"{corpus_id}_" if corpus_id else ""
+    path = Path(logs_dir) / f"{prefix}{config.experiment_id}_config.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     payload: dict[str, Any] = asdict(config)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
