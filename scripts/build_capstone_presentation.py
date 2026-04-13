@@ -15,7 +15,7 @@ from pptx.chart.data import CategoryChartData
 from pptx.dml.color import RGBColor
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
 from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
-from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
+from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -94,170 +94,6 @@ def _body_box(
         p.font.size = Pt(size)
         p.font.color.rgb = color
         p.space_after = Pt(6)
-
-
-def _small_circle_badge(
-    slide,
-    left: float,
-    top: float,
-    text: str,
-    fill: RGBColor,
-    size: float = 0.38,
-) -> None:
-    c = slide.shapes.add_shape(
-        MSO_AUTO_SHAPE_TYPE.OVAL,
-        Inches(left),
-        Inches(top),
-        Inches(size),
-        Inches(size),
-    )
-    c.fill.solid()
-    c.fill.fore_color.rgb = fill
-    c.line.fill.background()
-    tf = c.text_frame
-    tf.text = text
-    tf.paragraphs[0].alignment = PP_ALIGN.CENTER
-    try:
-        tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-    except Exception:
-        pass
-    tf.paragraphs[0].font.size = Pt(13)
-    tf.paragraphs[0].font.bold = True
-    tf.paragraphs[0].font.color.rgb = C_WHITE
-
-
-def _limitations_slide_engaging(
-    slide,
-    prs: Presentation,
-    left_lines: list[str],
-    right_lines: list[str],
-) -> None:
-    """Two-column layout with header pills, soft panels, and icon badges."""
-    _title_band(
-        slide,
-        prs,
-        "Limitations & next steps",
-        "Honest scope — and how I would extend the work",
-    )
-    # Soft background panels (add first = behind text)
-    p_left = slide.shapes.add_shape(
-        MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
-        Inches(0.55),
-        Inches(1.28),
-        Inches(4.45),
-        Inches(5.75),
-    )
-    p_left.fill.solid()
-    p_left.fill.fore_color.rgb = RGBColor(0xFF, 0xF7, 0xF5)
-    p_left.line.color.rgb = RGBColor(0xFE, 0xE2, 0xE2)
-    p_right = slide.shapes.add_shape(
-        MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
-        Inches(5.1),
-        Inches(1.28),
-        Inches(4.4),
-        Inches(5.75),
-    )
-    p_right.fill.solid()
-    p_pink = RGBColor(0xF0, 0xFD, 0xF4)
-    p_right.fill.fore_color.rgb = p_pink
-    p_right.line.color.rgb = RGBColor(0xBB, 0xF7, 0xD0)
-
-    # Icon badges + header labels
-    _small_circle_badge(slide, 0.7, 1.38, "!", C_ORANGE)
-    _small_circle_badge(slide, 5.25, 1.38, "\u2192", C_GREEN)  # →
-
-    hb1 = slide.shapes.add_textbox(Inches(1.15), Inches(1.36), Inches(3.6), Inches(0.4))
-    hb1.text_frame.text = "What this study does not fully establish"
-    hb1.text_frame.paragraphs[0].font.size = Pt(13)
-    hb1.text_frame.paragraphs[0].font.bold = True
-    hb1.text_frame.paragraphs[0].font.color.rgb = C_PRIMARY
-
-    hb2 = slide.shapes.add_textbox(Inches(5.7), Inches(1.36), Inches(3.5), Inches(0.4))
-    hb2.text_frame.text = "Natural extensions of the work"
-    hb2.text_frame.paragraphs[0].font.size = Pt(13)
-    hb2.text_frame.paragraphs[0].font.bold = True
-    hb2.text_frame.paragraphs[0].font.color.rgb = C_PRIMARY
-
-    _body_box(slide, 0.72, 1.88, 4.15, 5.0, left_lines, 12, C_MUTED)
-    _body_box(slide, 5.22, 1.88, 4.0, 5.0, right_lines, 12, C_MUTED)
-
-
-def _conclusion_slide_engaging(
-    slide,
-    prs: Presentation,
-    flow_titles: list[tuple[str, str]],
-    body_lines: list[str],
-) -> None:
-    """Top: three-step flow with arrows; bottom: narrative conclusion."""
-    _title_band(slide, prs, "Conclusion", "What we set out to do — what we learned")
-
-    n = len(flow_titles)
-    colors = [C_PRIMARY, C_ACCENT, C_GREEN]
-    while len(colors) < n:
-        colors.append(C_ACCENT)
-    box_w, box_h, gap, arrow_w = 2.35, 0.95, 0.22, 0.38
-    total = n * box_w + (n - 1) * (gap + arrow_w)
-    x0 = (10.0 - total) / 2
-    y_flow = 1.32
-    for i, ((title, sub), col) in enumerate(zip(flow_titles, colors)):
-        x = x0 + i * (box_w + gap + arrow_w)
-        bx = slide.shapes.add_shape(
-            MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
-            Inches(x),
-            Inches(y_flow),
-            Inches(box_w),
-            Inches(box_h),
-        )
-        bx.fill.solid()
-        bx.fill.fore_color.rgb = col
-        bx.line.fill.background()
-        tf = bx.text_frame
-        tf.word_wrap = True
-        tf.text = title
-        tf.paragraphs[0].font.size = Pt(12)
-        tf.paragraphs[0].font.bold = True
-        tf.paragraphs[0].font.color.rgb = C_WHITE
-        p2 = tf.add_paragraph()
-        p2.text = sub
-        p2.font.size = Pt(10)
-        p2.font.color.rgb = RGBColor(0xE2, 0xE8, 0xF0)
-        if i < n - 1:
-            ax = x + box_w + gap / 2
-            arr = slide.shapes.add_shape(
-                MSO_AUTO_SHAPE_TYPE.RIGHT_ARROW,
-                Inches(ax),
-                Inches(y_flow + box_h / 2 - 0.11),
-                Inches(arrow_w),
-                Inches(0.22),
-            )
-            arr.fill.solid()
-            arr.fill.fore_color.rgb = RGBColor(0xA0, 0xAE, 0xC0)
-            arr.line.fill.background()
-
-    # Subtle strip under flow
-    strip = slide.shapes.add_shape(
-        MSO_AUTO_SHAPE_TYPE.RECTANGLE,
-        Inches(0.55),
-        Inches(2.38),
-        Inches(8.9),
-        Inches(0.06),
-    )
-    strip.fill.solid()
-    strip.fill.fore_color.rgb = RGBColor(0xE2, 0xE8, 0xF0)
-    strip.line.fill.background()
-
-    card = slide.shapes.add_shape(
-        MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
-        Inches(0.6),
-        Inches(2.52),
-        Inches(8.85),
-        Inches(4.55),
-    )
-    card.fill.solid()
-    card.fill.fore_color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
-    card.line.color.rgb = RGBColor(0xCB, 0xD5, 0xE0)
-
-    _body_box(slide, 0.75, 2.62, 8.55, 4.35, body_lines, 15, C_PRIMARY)
 
 
 def _load_data():
@@ -803,38 +639,40 @@ def main() -> None:
     # --- 12. Limitations ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
-    lim_left = [
-        "Sample size: 10 evaluated questions per experiment per corpus — good for directional patterns, not for significance; a few hard items can move averages.",
-        "Generalization: Four PDFs (two 10-Ks, two FDA labels) illustrate two genres, not all of finance or healthcare (e.g., calls, clinical notes, other regulators).",
-        "Metrics: LLM judges and RAGAS depend on model settings; they can disagree. Rule metrics (recall, citations) are stable but incomplete. Human spot-checks would strengthen claims.",
-        "Operations: Depends on OpenAI / LlamaParse availability, cost, and rate limits; reproducing runs needs the same stack or documented substitutes.",
-    ]
-    lim_right = [
-        "Prioritized next steps:",
-        "(1) Larger n + confidence intervals or bootstrap bands.",
-        "(2) More corpora per genre and out-of-sample documents.",
-        "(3) Optional stratified human evaluation on failure cases.",
-        "(4) More rerankers and abstention / citation policies.",
-        "(5) Chunking defaults informed by Tier B–style ablations at scale.",
-    ]
-    _limitations_slide_engaging(slide, prs, lim_left, lim_right)
+    _title_band(slide, prs, "Limitations & next steps", "")
+    _body_box(
+        slide,
+        0.75,
+        1.45,
+        8.5,
+        5.5,
+        [
+            "n=10 questions / experiment — exploratory, not definitive.",
+            "Four PDFs — illustrative genres, not all of finance or healthcare.",
+            "LLM judges add variance; triangulate with rule-based metrics.",
+            "Next: larger n, confidence intervals, more rerankers & abstention policies.",
+        ],
+        18,
+    )
 
     # --- 13. Conclusion ---
     slide = prs.slides.add_slide(blank)
     _set_slide_bg(slide)
-    flow = [
-        ("Industry need", "Trust & grounded answers"),
-        ("This study", "Controlled RAG comparison"),
-        ("Takeaway", "Tradeoffs by domain"),
-    ]
-    conc_body = [
-        "Problem: Teams need reliable AI on dense professional text; hallucinations stall adoption despite efficiency upside.",
-        "What we built: An end-to-end RAG evaluation pipeline — tiered experiments (same-gold vs chunking), multi-metric scoring, four real PDF corpora.",
-        "What we saw: No single best preset for every metric or genre. Narrower retrieval (e.g., k=3) leaned toward lower hallucination flags on average; richer retrieval + CoT leaned toward higher correctness but higher hallucination flags — a tradeoff to choose explicitly.",
-        "Deliverable: Reproducible code, logs, and analysis tables others can extend with their documents and larger n.",
-        "Thank you — questions welcome.",
-    ]
-    _conclusion_slide_engaging(slide, prs, flow, conc_body)
+    _title_band(slide, prs, "Conclusion", "")
+    _body_box(
+        slide,
+        0.85,
+        1.55,
+        8.3,
+        5.0,
+        [
+            "RAG design choices shift grounding vs correctness — differently on 10-Ks vs FDA labels.",
+            "Deliverable: reproducible pipeline + data-driven comparison tables for practitioners.",
+            "Thank you — questions?",
+        ],
+        22,
+        C_PRIMARY,
+    )
 
     path = OUT / "RAG_Hallucination_Capstone.pptx"
     prs.save(path)
